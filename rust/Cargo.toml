@@ -1,0 +1,12 @@
+[package]
+name = "sick_scan_xd"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+byteorder = "1.4.3"
+thiserror = "1.0.37"
+
+[build-dependencies]
+bindgen = "0.60.1"
+cc = "1.0.73"

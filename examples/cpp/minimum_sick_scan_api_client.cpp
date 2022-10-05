@@ -5,32 +5,44 @@
 #include "sick_scan_xd_api/sick_scan_api.h"
 
 // Implement a callback to process pointcloud messages
-void customizedPointCloudMsgCb(SickScanApiHandle apiHandle, const SickScanPointCloudMsg* msg)
-{
-  std::cout << "C++ PointCloudMsgCb: " << msg->width << " x " << msg->height << " pointcloud message received" << std::endl; // data processing to be done
+void customizedPointCloudMsgCb(SickScanApiHandle apiHandle,
+                               const SickScanPointCloudMsg *msg) {
+  std::cout << "C++ PointCloudMsgCb: " << msg->width << " x " << msg->height
+            << " pointcloud message received"
+            << std::endl; // data processing to be done
 }
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   // Create a sick_scan instance and initialize lidar with commandline arguments
 #ifdef _MSC_VER
-	const char* sick_scan_api_lib = "sick_scan_shared_lib.dll";
+  const char *sick_scan_api_lib = "sick_scan_shared_lib.dll";
 #else
-	const char* sick_scan_api_lib = "libsick_scan_shared_lib.so";
+  const char *sick_scan_api_lib = "libsick_scan_shared_lib.so";
 #endif
   SickScanApiLoadLibrary(sick_scan_api_lib);
   SickScanApiHandle apiHandle = SickScanApiCreate(argc, argv);
   SickScanApiInitByCli(apiHandle, argc, argv);
 
-  // Register for pointcloud messages
-  SickScanApiRegisterCartesianPointCloudMsg(apiHandle, &customizedPointCloudMsgCb);
+  SickScanPointCloudMsg message;
+  for (size_t i = 0; i < 100; ++i) {
+    SickScanApiWaitNextCartesianPointCloudMsg(apiHandle, &message, 1.0);
+    std::cout << "C++ PointCloudMsgCb: " << message.width << " x "
+              << message.height << " pointcloud message received, "
+              << message.data.size << std::endl;
+    // SickScanApiFreePointCloudMsg(apiHandle, &message);
+  }
 
-  // Run application or main loop
-  // getchar();
-  std::this_thread::sleep_for(std::chrono::seconds(15));
+  // // Register for pointcloud messages
+  // SickScanApiRegisterCartesianPointCloudMsg(apiHandle,
+  // &customizedPointCloudMsgCb);
 
-  // Close lidar and release sick_scan api
-  SickScanApiDeregisterCartesianPointCloudMsg(apiHandle, &customizedPointCloudMsgCb);
+  // // Run application or main loop
+  // // getchar();
+  // std::this_thread::sleep_for(std::chrono::seconds(60));
+
+  // // Close lidar and release sick_scan api
+  // SickScanApiDeregisterCartesianPointCloudMsg(apiHandle,
+  // &customizedPointCloudMsgCb);
   SickScanApiClose(apiHandle);
   SickScanApiRelease(apiHandle);
   SickScanApiUnloadLibrary();

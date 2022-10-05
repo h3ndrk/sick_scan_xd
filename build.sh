@@ -1,0 +1,3 @@
+#!/bin/bash
+
+cmake -G Ninja -Bbuild -DCMAKE_INSTALL_PREFIX=/home/h3ndrk/Documents/sick/install -DROS_VERSION=0 -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_FIND_USE_PACKAGE_REGISTRY=OFF
